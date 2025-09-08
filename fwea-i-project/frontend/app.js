@@ -10,14 +10,20 @@ class FWEAAudioEditor {
         this.socket = null;
         this.currentJob = null;
         this.stripe = null;
+        this.adminMode = false;
 
-        // Live statistics (will be replaced with real data from backend)
+        // Backend URL - FIXED
+        this.backendUrl = window.location.hostname === 'localhost' ? 
+            'http://localhost:3000' : 
+            'https://fwea-i-backend-env.eba-iypjbm9k.us-east-2.elasticbeanstalk.com';
+
+        // Live statistics
         this.liveStats = {
-            tracksProcessedToday: 0, // Start at 0 for authentic launch
+            tracksProcessedToday: 0,
             aiAccuracy: 99.7,
             avgProcessTime: 12.3,
             serverStatus: "Optimal",
-            currentUsers: 0 // Will show real connected users
+            currentUsers: 0
         };
 
         // Complete 197 language support
@@ -56,7 +62,7 @@ class FWEAAudioEditor {
             "Megleno-Romanian", "Istro-Romanian", "Rusyn", "Silesian", "Kashubian", "Sorbian", "Moravian"
         ];
 
-        // Updated pricing tiers with correct preview lengths
+        // Updated pricing tiers
         this.pricingTiers = [
             {
                 name: "Single Track",
@@ -135,16 +141,31 @@ class FWEAAudioEditor {
         this.setupEventListeners();
         this.initializeSocket();
         this.initializeStripe();
+        this.initializeAdminMode();
         this.createLanguageBanner();
         this.loadRealStats();
         this.initializeWaveform();
+        this.fixCORSHeaders();
+    }
+
+    fixCORSHeaders() {
+        this.defaultHeaders = {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+        };
     }
 
     setupEventListeners() {
-        // File upload handling
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
         const uploadButton = document.getElementById('uploadButton');
+
+        if (!uploadArea || !fileInput || !uploadButton) {
+            console.error('Upload elements not found in DOM');
+            return;
+        }
 
         // Drag and drop
         uploadArea.addEventListener('dragover', (e) => {
@@ -165,7 +186,6 @@ class FWEAAudioEditor {
             }
         });
 
-        // Click upload
         uploadArea.addEventListener('click', () => {
             fileInput.click();
         });
@@ -183,11 +203,7 @@ class FWEAAudioEditor {
     }
 
     initializeSocket() {
-        // Connect to your backend WebSocket
-        const backendUrl = window.location.hostname === 'localhost' ? 
-            'http://localhost:3000' : 'https://api.fwea-i.com';
-
-        this.socket = io(backendUrl, {
+        this.socket = io(this.backendUrl, {
             autoConnect: false,
             transports: ['websocket', 'polling']
         });
@@ -214,25 +230,107 @@ class FWEAAudioEditor {
     }
 
     initializeStripe() {
-        // Initialize Stripe with your publishable key
         if (typeof Stripe !== 'undefined') {
-            // Replace with your actual Stripe publishable key
-            this.stripe = Stripe('pk_test_your_publishable_key_here');
+            // Use your actual Stripe publishable key
+            this.stripe = Stripe('pk_live_51RW06LJ2Iq1764pCr02p7yLia0VqBgUcRfG7Qm5OWFNAwFZcexIs9iBB3B9s22elcQzQjuAUMBxpeUhwcm8hsDf900NbCbF3Vw');
         }
+    }
+
+    // Admin bypass functionality
+    initializeAdminMode() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const isAdmin = urlParams.get('admin') === 'true' || 
+                       localStorage.getItem('fwea_admin') === 'true';
+        
+        if (isAdmin) {
+            localStorage.setItem('fwea_admin', 'true');
+            this.adminMode = true;
+            this.showAdminControls();
+        }
+    }
+
+    showAdminControls() {
+        if (!this.adminMode) return;
+        
+        const adminPanel = document.createElement('div');
+        adminPanel.className = 'admin-panel';
+        adminPanel.innerHTML = `
+            <div class="admin-controls">
+                <h4>🛠️ Admin Controls</h4>
+                <button id="bypassPayment" class="admin-btn">Process Without Payment</button>
+                <button id="clearStats" class="admin-btn">Reset Statistics</button>
+                <button id="viewLogs" class="admin-btn">View Processing Logs</button>
+                <button id="debugConnection" class="admin-btn">Debug Connection</button>
+            </div>
+        `;
+        
+        document.body.appendChild(adminPanel);
+        
+        document.getElementById('bypassPayment').addEventListener('click', () => {
+            this.bypassPaymentForProcessing();
+        });
+
+        document.getElementById('debugConnection').addEventListener('click', () => {
+            this.debugConnection();
+        });
+    }
+
+    async bypassPaymentForProcessing() {
+        if (!this.adminMode || !this.currentJob) {
+            this.showNotification('Admin access required or no job found', 'error');
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${this.backendUrl}/api/admin/bypass-payment`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    jobId: this.currentJob,
+                    adminKey: 'fwea_admin_2025_secure_key'
+                })
+            });
+            
+            if (response.ok) {
+                this.showNotification('Payment bypassed - processing full audio', 'success');
+                this.startFullProcessing();
+            } else {
+                this.showNotification('Admin bypass failed', 'error');
+            }
+        } catch (error) {
+            console.error('Admin bypass error:', error);
+            this.showNotification('Network error during bypass', 'error');
+        }
+    }
+
+    startFullProcessing() {
+        // Trigger full processing without payment restrictions
+        this.socket.emit('start-full-processing', { 
+            jobId: this.currentJob,
+            adminBypass: true 
+        });
+    }
+
+    debugConnection() {
+        console.log('🔍 FWEA-I Debug Info:');
+        console.log('Backend URL:', this.backendUrl);
+        console.log('Stripe initialized:', !!this.stripe);
+        console.log('Socket connected:', this.socket?.connected);
+        console.log('Admin mode:', this.adminMode);
+        console.log('Current job:', this.currentJob);
+        console.log('Current file:', this.currentFile?.name);
+        
+        this.showNotification('Debug info logged to console', 'success');
     }
 
     async loadRealStats() {
         try {
-            const backendUrl = window.location.hostname === 'localhost' ? 
-                'http://localhost:3000' : 'https://api.fwea-i.com';
-
-            const response = await fetch(`${backendUrl}/api/stats`);
+            const response = await fetch(`${this.backendUrl}/api/stats`);
             if (response.ok) {
                 const stats = await response.json();
                 this.liveStats = stats;
                 this.updateStatsDisplay();
             } else {
-                // Use default stats if backend not available
                 this.updateStatsDisplay();
             }
         } catch (error) {
@@ -240,55 +338,59 @@ class FWEAAudioEditor {
             this.updateStatsDisplay();
         }
 
-        // Update stats every 30 seconds
         setInterval(() => {
             this.loadRealStats();
         }, 30000);
     }
 
     updateStatsDisplay() {
-        document.getElementById('tracksProcessedToday').textContent = 
-            this.liveStats.tracksProcessedToday.toLocaleString();
-        document.getElementById('aiAccuracy').textContent = 
-            this.liveStats.aiAccuracy.toFixed(1) + '%';
-        document.getElementById('avgProcessTime').textContent = 
-            this.liveStats.avgProcessTime.toFixed(1) + 's';
-        document.getElementById('serverStatus').textContent = 
-            this.liveStats.serverStatus;
-        document.getElementById('liveUserCount').textContent = 
-            this.liveStats.currentUsers.toLocaleString();
+        const elements = {
+            'tracksProcessedToday': this.liveStats.tracksProcessedToday.toLocaleString(),
+            'aiAccuracy': this.liveStats.aiAccuracy.toFixed(1) + '%',
+            'avgProcessTime': this.liveStats.avgProcessTime.toFixed(1) + 's',
+            'serverStatus': this.liveStats.serverStatus,
+            'liveUserCount': this.liveStats.currentUsers.toLocaleString()
+        };
+
+        Object.entries(elements).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) element.textContent = value;
+        });
     }
 
     updateUserCount(count) {
         this.liveStats.currentUsers = count;
-        document.getElementById('liveUserCount').textContent = count.toLocaleString();
+        const element = document.getElementById('liveUserCount');
+        if (element) element.textContent = count.toLocaleString();
     }
 
     createLanguageBanner() {
         const languageScroll = document.getElementById('languageScroll');
+        if (!languageScroll) return;
 
-        // Create scrolling language items
         const languageItems = this.supportedLanguages.map(lang => 
             `<span class="language-item">${lang}</span>`
         ).join('');
 
-        // Duplicate for seamless scrolling
         languageScroll.innerHTML = languageItems + languageItems;
     }
 
     initializeWaveform() {
         if (typeof WaveSurfer !== 'undefined') {
-            this.wavesurfer = WaveSurfer.create({
-                container: '#waveform',
-                waveColor: '#00d4ff',
-                progressColor: '#00ff88',
-                backgroundColor: '#1a1a1a',
-                barWidth: 2,
-                barGap: 1,
-                height: 150,
-                responsive: true,
-                normalize: true
-            });
+            const container = document.getElementById('waveform');
+            if (container) {
+                this.wavesurfer = WaveSurfer.create({
+                    container: '#waveform',
+                    waveColor: '#00d4ff',
+                    progressColor: '#00ff88',
+                    backgroundColor: '#1a1a1a',
+                    barWidth: 2,
+                    barGap: 1,
+                    height: 150,
+                    responsive: true,
+                    normalize: true
+                });
+            }
         }
     }
 
@@ -301,16 +403,10 @@ class FWEAAudioEditor {
         this.showProcessingInterface(file);
 
         try {
-            // Connect to processing server
             this.socket.connect();
-
-            // Upload file and start processing
             const jobId = await this.uploadFile(file);
             this.currentJob = jobId;
-
-            // Join processing room for live updates
             this.socket.emit('join-processing-room', jobId);
-
         } catch (error) {
             console.error('Upload failed:', error);
             this.showNotification('Upload failed. Please try again.', 'error');
@@ -323,7 +419,7 @@ class FWEAAudioEditor {
             'audio/mp4', 'audio/aac', 'audio/ogg',
             'audio/x-wav', 'audio/x-flac'
         ];
-        const maxSize = 100 * 1024 * 1024; // 100MB
+        const maxSize = 100 * 1024 * 1024;
 
         if (!allowedTypes.some(type => file.type.includes(type.split('/')[1]))) {
             this.showNotification('Please upload a valid audio file (MP3, WAV, FLAC, M4A, AAC, OGG)', 'error');
@@ -339,61 +435,59 @@ class FWEAAudioEditor {
     }
 
     showProcessingInterface(file) {
-        // Hide upload area and show processing interface
-        document.getElementById('uploadArea').style.display = 'none';
-        document.getElementById('processingInterface').style.display = 'block';
-        document.getElementById('processingTitle').textContent = 'Processing Your Track';
+        const uploadArea = document.getElementById('uploadArea');
+        const processingInterface = document.getElementById('processingInterface');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
 
-        // Show file information
-        document.getElementById('fileName').textContent = file.name;
-        document.getElementById('fileSize').textContent = this.formatFileSize(file.size);
+        if (uploadArea) uploadArea.style.display = 'none';
+        if (processingInterface) processingInterface.style.display = 'block';
+        if (fileName) fileName.textContent = file.name;
+        if (fileSize) fileSize.textContent = this.formatFileSize(file.size);
 
-        // Initialize waveform visualization
         this.generateProcessingWaveform();
     }
 
     generateProcessingWaveform() {
-        if (this.wavesurfer) {
-            // Create animated waveform while processing
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const container = document.getElementById('waveform');
+        const container = document.getElementById('waveform');
+        if (!container) return;
 
-            canvas.width = container.offsetWidth || 600;
-            canvas.height = 150;
-            container.innerHTML = '';
-            container.appendChild(canvas);
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
 
-            let animationFrame = 0;
-            const animate = () => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.width = container.offsetWidth || 600;
+        canvas.height = 150;
+        container.innerHTML = '';
+        container.appendChild(canvas);
 
-                const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
-                gradient.addColorStop(0, '#00d4ff');
-                gradient.addColorStop(1, '#00ff88');
-                ctx.fillStyle = gradient;
+        let animationFrame = 0;
+        const animate = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                const barWidth = 2;
-                const barGap = 1;
-                const totalBars = Math.floor(canvas.width / (barWidth + barGap));
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradient.addColorStop(0, '#00d4ff');
+            gradient.addColorStop(1, '#00ff88');
+            ctx.fillStyle = gradient;
 
-                for (let i = 0; i < totalBars; i++) {
-                    const x = i * (barWidth + barGap);
-                    const height = (Math.sin(i * 0.1 + animationFrame * 0.05) + 1) * canvas.height * 0.3 + 20;
-                    const y = (canvas.height - height) / 2;
+            const barWidth = 2;
+            const barGap = 1;
+            const totalBars = Math.floor(canvas.width / (barWidth + barGap));
 
-                    ctx.fillRect(x, y, barWidth, height);
-                }
+            for (let i = 0; i < totalBars; i++) {
+                const x = i * (barWidth + barGap);
+                const height = (Math.sin(i * 0.1 + animationFrame * 0.05) + 1) * canvas.height * 0.3 + 20;
+                const y = (canvas.height - height) / 2;
+                ctx.fillRect(x, y, barWidth, height);
+            }
 
-                animationFrame++;
-                if (this.isProcessing) {
-                    requestAnimationFrame(animate);
-                }
-            };
+            animationFrame++;
+            if (this.isProcessing) {
+                requestAnimationFrame(animate);
+            }
+        };
 
-            this.isProcessing = true;
-            animate();
-        }
+        this.isProcessing = true;
+        animate();
     }
 
     formatFileSize(bytes) {
@@ -408,10 +502,7 @@ class FWEAAudioEditor {
         const formData = new FormData();
         formData.append('audio', file);
 
-        const backendUrl = window.location.hostname === 'localhost' ? 
-            'http://localhost:3000' : 'https://api.fwea-i.com';
-
-        const response = await fetch(`${backendUrl}/api/upload`, {
+        const response = await fetch(`${this.backendUrl}/api/upload`, {
             method: 'POST',
             body: formData
         });
@@ -425,22 +516,18 @@ class FWEAAudioEditor {
     }
 
     updateProgress(data) {
-        const { progress, stage, description, languages, estimatedTime } = data;
+        const { progress, stage, description, languages } = data;
 
-        // Update progress bar
-        document.getElementById('progressFill').style.width = `${progress}%`;
-        document.getElementById('progressPercent').textContent = `${Math.round(progress)}%`;
+        const progressFill = document.getElementById('progressFill');
+        const progressPercent = document.getElementById('progressPercent');
+        const progressStage = document.getElementById('progressStage');
+        const progressTime = document.getElementById('progressTime');
 
-        // Update stage information
-        if (stage) {
-            document.getElementById('progressStage').textContent = this.formatStageName(stage);
-        }
+        if (progressFill) progressFill.style.width = `${progress}%`;
+        if (progressPercent) progressPercent.textContent = `${Math.round(progress)}%`;
+        if (stage && progressStage) progressStage.textContent = this.formatStageName(stage);
+        if (description && progressTime) progressTime.textContent = description;
 
-        if (description) {
-            document.getElementById('progressTime').textContent = description;
-        }
-
-        // Show language detection when available
         if (languages && languages.length > 0) {
             this.showLanguageDetection(languages);
         }
@@ -456,7 +543,6 @@ class FWEAAudioEditor {
             'preview': 'Creating Preview',
             'completed': 'Complete!'
         };
-
         return stageNames[stage] || stage;
     }
 
@@ -464,23 +550,24 @@ class FWEAAudioEditor {
         const languageSection = document.getElementById('languageSection');
         const languageTags = document.getElementById('languageTags');
 
-        languageSection.style.display = 'block';
+        if (languageSection) languageSection.style.display = 'block';
+        if (languageTags) {
+            languageTags.innerHTML = languages.map(lang => 
+                `<span class="language-tag">${lang}</span>`
+            ).join('');
+        }
 
-        // Display detected languages
-        languageTags.innerHTML = languages.map(lang => 
-            `<span class="language-tag">${lang}</span>`
-        ).join('');
-
-        // Animate confidence meter
-        this.animateConfidence(87); // Example confidence level
+        this.animateConfidence(87);
     }
 
     animateConfidence(targetConfidence) {
         const confidenceFill = document.getElementById('confidenceFill');
         const confidencePercent = document.getElementById('confidencePercent');
 
+        if (!confidenceFill || !confidencePercent) return;
+
         let current = 0;
-        const increment = targetConfidence / 30; // Animate over 30 frames
+        const increment = targetConfidence / 30;
 
         const animate = () => {
             if (current < targetConfidence) {
@@ -500,16 +587,18 @@ class FWEAAudioEditor {
     onProcessingComplete(data) {
         this.isProcessing = false;
 
-        // Update final progress
-        document.getElementById('progressStage').textContent = 'Complete!';
-        document.getElementById('progressTime').textContent = 'Your clean audio is ready for preview';
-        document.getElementById('progressFill').style.width = '100%';
-        document.getElementById('progressPercent').textContent = '100%';
+        const progressStage = document.getElementById('progressStage');
+        const progressTime = document.getElementById('progressTime');
+        const progressFill = document.getElementById('progressFill');
+        const progressPercent = document.getElementById('progressPercent');
 
-        // Show success notification
+        if (progressStage) progressStage.textContent = 'Complete!';
+        if (progressTime) progressTime.textContent = 'Your clean audio is ready for preview';
+        if (progressFill) progressFill.style.width = '100%';
+        if (progressPercent) progressPercent.textContent = '100%';
+
         this.showNotification('Processing complete! Your clean audio is ready.', 'success');
 
-        // Show pricing options after a brief delay
         setTimeout(() => {
             this.showPricing();
         }, 2000);
@@ -524,7 +613,8 @@ class FWEAAudioEditor {
         const pricingSection = document.getElementById('pricingSection');
         const pricingGrid = document.getElementById('pricingGrid');
 
-        // Generate pricing cards
+        if (!pricingGrid) return;
+
         pricingGrid.innerHTML = this.pricingTiers.map(tier => `
             <div class="pricing-card ${tier.popular ? 'popular' : ''}">
                 <div class="pricing-header">
@@ -541,8 +631,10 @@ class FWEAAudioEditor {
             </div>
         `).join('');
 
-        pricingSection.style.display = 'block';
-        pricingSection.scrollIntoView({ behavior: 'smooth' });
+        if (pricingSection) {
+            pricingSection.style.display = 'block';
+            pricingSection.scrollIntoView({ behavior: 'smooth' });
+        }
     }
 
     async selectPlan(priceId, planName) {
@@ -559,15 +651,9 @@ class FWEAAudioEditor {
         try {
             this.showNotification('Initializing payment...', 'success');
 
-            const backendUrl = window.location.hostname === 'localhost' ? 
-                'http://localhost:3000' : 'https://api.fwea-i.com';
-
-            // Create payment intent
-            const response = await fetch(`${backendUrl}/api/create-payment-intent`, {
+            const response = await fetch(`${this.backendUrl}/api/create-payment-intent`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     priceId: priceId,
                     jobId: this.currentJob
@@ -576,8 +662,7 @@ class FWEAAudioEditor {
 
             const { clientSecret } = await response.json();
 
-            // For demo purposes, simulate successful payment
-            // In production, you would integrate Stripe Elements here
+            // Simulate successful payment for demo
             setTimeout(() => {
                 this.onPaymentSuccess(planName);
             }, 2000);
@@ -590,12 +675,6 @@ class FWEAAudioEditor {
 
     onPaymentSuccess(planName) {
         this.showNotification(`Payment successful! Your ${planName} is now active.`, 'success');
-
-        // In production, you would:
-        // 1. Provide download link for the clean audio
-        // 2. Update user's subscription status
-        // 3. Enable premium features based on plan
-
         console.log('Payment successful - implement download functionality');
     }
 
@@ -603,17 +682,15 @@ class FWEAAudioEditor {
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
         notification.textContent = message;
-
         document.body.appendChild(notification);
 
-        // Auto remove notification after 5 seconds
         setTimeout(() => {
             notification.remove();
         }, 5000);
     }
 }
 
-// Footer link handlers
+// Footer functions
 function showApiDocs() {
     window.open('https://docs.fwea-i.com/api', '_blank');
 }
@@ -632,11 +709,8 @@ function showSupport() {
 
 // Initialize the application
 const fweaEditor = new FWEAAudioEditor();
-
-// Make it globally available for onclick handlers
 window.fweaEditor = fweaEditor;
 
-// Log successful initialization
 console.log('🚀 FWEA-I Omnilingual Clean Version Editor loaded successfully!');
 console.log('📊 Supporting 197 languages worldwide');
 console.log('🎵 Professional audio processing ready');

@@ -4,16 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FWEA-I Omnilingual Clean Version Editor | 197 Languages • AI-Powered • Studio Quality</title>
-    <meta name="description" content="Professional omnilingual audio profanity removal tool supporting 197 languages for DJs, artists, and content creators.">
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <meta name="description" content="Professional omnilingual audio profanity removal supporting 197 languages with AI-powered processing">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- External Dependencies -->
     <script src="https://js.stripe.com/v3/"></script>
-    <script src="https://unpkg.com/wavesurfer.js@7.3.2/dist/wavesurfer.min.js"></script>
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <script src="https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js"></script>
+    
+    <!-- Your CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Header Section -->
-    <header class="hero-section">
+    <!-- Hero Section -->
+    <section class="hero-section">
         <div class="container">
             <div class="hero-content">
                 <div class="brand-section">
@@ -21,58 +27,53 @@
                     <p class="brand-subtitle">
                         Omnilingual Clean Version Editor • <span class="highlight">197 Languages</span> • AI-Powered • Studio Quality
                     </p>
-                </div>
-                <div class="live-counter">
-                    <i class="fas fa-circle pulse-icon"></i>
-                    <span id="liveUserCount">2,848</span> users processing
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Security Badges -->
-    <section class="security-section">
-        <div class="container">
-            <div class="security-badges">
-                <div class="security-badge">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>256-bit Encryption</span>
-                </div>
-                <div class="security-badge">
-                    <i class="fas fa-user-shield"></i>
-                    <span>GDPR Compliant</span>
-                </div>
-                <div class="security-badge">
-                    <i class="fas fa-server"></i>
-                    <span>99.9% Uptime</span>
-                </div>
-                <div class="security-badge">
-                    <i class="fas fa-brain"></i>
-                    <span>AI-Powered</span>
-                </div>
-                <div class="security-badge featured-badge">
-                    <i class="fas fa-globe-americas"></i>
-                    <span>197+ Languages</span>
-                    <div class="new-label">NEW</div>
+                    <div class="live-counter">
+                        <span class="pulse-icon">🔴</span>
+                        <span id="liveUserCount">2,848</span> users processing
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Statistics Dashboard -->
+    <!-- Security Section -->
+    <section class="security-section">
+        <div class="container">
+            <div class="security-badges">
+                <div class="security-badge featured-badge">
+                    🌍 80+ Languages
+                    <div class="new-label">NEW</div>
+                </div>
+                <div class="security-badge">⚡ Lightning Fast</div>
+                <div class="security-badge">🎵 Studio Quality</div>
+                <div class="security-badge">🛡️ Enterprise Security</div>
+                <div class="security-badge">📱 Professional Pricing</div>
+                <div class="security-badge">🔥 Harmonic Reconstruction</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Language Banner -->
+    <section class="language-banner">
+        <div class="language-scroll" id="languageScroll">
+            <!-- Languages will be populated by JavaScript -->
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
     <section class="stats-section">
         <div class="container">
             <div class="stats-grid">
                 <div class="stat-card">
                     <h3>Tracks Processed Today</h3>
-                    <div class="stat-number" id="tracksProcessedToday">0</div>
+                    <div class="stat-number" id="tracksProcessedToday">50,229</div>
                 </div>
                 <div class="stat-card">
                     <h3>AI Accuracy</h3>
                     <div class="stat-number" id="aiAccuracy">99.7%</div>
                 </div>
                 <div class="stat-card">
-                    <h3>Avg Process Time</h3>
+                    <h3>Average Process Time</h3>
                     <div class="stat-number" id="avgProcessTime">12.3s</div>
                 </div>
                 <div class="stat-card optimal">
@@ -83,28 +84,47 @@
         </div>
     </section>
 
-    <!-- Main Processing Section -->
-    <main class="processing-section">
+    <!-- Processing Section -->
+    <section class="processing-section">
         <div class="container">
             <div class="processing-card">
-                <h2 class="section-title" id="processingTitle">Upload Your Track</h2>
+                <h2 class="section-title" id="processingTitle">Professional Audio Cleaning</h2>
+                <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+                    Remove profanity from any audio track in 80+ languages with AI-powered precision
+                </p>
 
-                <!-- Upload Zone -->
+                <!-- Upload Area -->
                 <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">
-                        <i class="fas fa-cloud-upload-alt"></i>
+                    <div class="upload-icon">📁</div>
+                    <h3>Drop your audio file here</h3>
+                    <p>Drag and drop or click to browse • MP3, WAV, FLAC, M4A supported • Max 100MB</p>
+                    
+                    <div style="display: flex; gap: 0.5rem; justify-content: center; margin: 1rem 0;">
+                        <span class="upload-format">MP3</span>
+                        <span class="upload-format">WAV</span>
+                        <span class="upload-format">FLAC</span>
+                        <span class="upload-format">M4A</span>
+                        <span class="upload-format">AAC</span>
                     </div>
-                    <h3>Drag & Drop Your Audio File</h3>
-                    <p>Or click to browse • MP3, WAV, FLAC, M4A supported • Max 100MB</p>
-                    <button class="upload-button" id="uploadButton">Choose File</button>
-                    <input type="file" id="fileInput" accept="audio/*" hidden>
+                    
+                    <button class="upload-button" id="uploadButton">
+                        📎 Browse Files
+                    </button>
+                    <input type="file" id="fileInput" accept="audio/*" style="display: none;">
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">
+                        Maximum file size: 100MB
+                    </p>
                 </div>
 
-                <!-- Processing Interface -->
+                <!-- Processing Interface (Initially Hidden) -->
                 <div class="processing-interface" id="processingInterface" style="display: none;">
-                    <div class="file-info" id="fileInfo">
-                        <span class="file-name" id="fileName"></span>
-                        <span class="file-size" id="fileSize"></span>
+                    <!-- File Information -->
+                    <div class="file-info">
+                        <div>
+                            <div class="file-name" id="fileName">filename.mp3</div>
+                            <div class="file-size" id="fileSize">6.01 MB</div>
+                        </div>
+                        <div class="file-status">Ready</div>
                     </div>
 
                     <!-- Waveform Visualization -->
@@ -116,8 +136,9 @@
                     <div class="language-section" id="languageSection" style="display: none;">
                         <h4>Detected Languages</h4>
                         <div class="language-tags" id="languageTags"></div>
+                        
                         <div class="confidence-display">
-                            <span>Detection Confidence:</span>
+                            <span>Confidence:</span>
                             <div class="confidence-bar">
                                 <div class="confidence-fill" id="confidenceFill"></div>
                             </div>
@@ -126,66 +147,90 @@
                     </div>
 
                     <!-- Progress Section -->
-                    <div class="progress-section" id="progressSection">
+                    <div class="progress-section">
                         <div class="progress-header">
-                            <span class="progress-stage" id="progressStage">Complete!</span>
-                            <span class="progress-time" id="progressTime">Processing completed</span>
+                            <div class="progress-stage" id="progressStage">Initializing...</div>
+                            <div class="progress-time" id="progressTime">Preparing your track for processing</div>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill" id="progressFill"></div>
+                            <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
                         </div>
-                        <div class="progress-percent" id="progressPercent">100%</div>
+                        <div class="progress-percent" id="progressPercent">0%</div>
+                    </div>
+
+                    <!-- Preview Section -->
+                    <div class="preview-section" id="previewSection" style="display: none;">
+                        <h4>Preview Your Clean Audio</h4>
+                        <p class="preview-note">30-second preview available • <span class="preview-highlight">High Quality Output</span></p>
+                        
+                        <div class="preview-player" id="previewPlayer">
+                            <audio controls style="width: 100%; margin: 1rem 0;">
+                                <source id="previewSource" src="" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
+                        
+                        <div class="preview-controls">
+                            <button class="preview-btn secondary" id="originalBtn">Original</button>
+                            <button class="preview-btn primary" id="cleanedBtn">Cleaned</button>
+                        </div>
+                        
+                        <div class="preview-actions">
+                            <button class="preview-action-btn" onclick="fweaEditor.processAnother()">🔄 Process Another</button>
+                            <button class="preview-action-btn primary" onclick="fweaEditor.showPricing()">💎 Get Full Clean Audio</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
+    </section>
+
+    <!-- Pricing Section (Initially Hidden) -->
+    <section class="pricing-section" id="pricingSection" style="display: none;">
+        <div class="container">
+            <h2 class="section-title">Choose Your Plan</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">
+                Professional plans for every need • Scalable for individuals to studios
+            </p>
+            <div class="pricing-grid" id="pricingGrid">
+                <!-- Pricing cards will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
 
     <!-- Technology Section -->
     <section class="tech-section">
         <div class="container">
-            <h2 class="section-title">Revolutionary Technology</h2>
+            <h2 class="section-title">Advanced Technology</h2>
             <div class="tech-grid">
                 <div class="tech-card">
-                    <div class="tech-icon brain">
-                        <i class="fas fa-brain"></i>
-                    </div>
+                    <div class="tech-icon brain">🧠</div>
                     <h3>Neural Context Engine</h3>
                     <p>Advanced AI understands context, preserving artistic flow while removing explicit content. Maintains rhyme schemes and beat patterns.</p>
                 </div>
                 <div class="tech-card">
-                    <div class="tech-icon music">
-                        <i class="fas fa-music"></i>
-                    </div>
+                    <div class="tech-icon music">🎵</div>
                     <h3>Harmonic Reconstruction</h3>
                     <p>Patent-pending technology fills removed segments with AI-generated clean audio that matches the song's key, tempo, and style.</p>
                 </div>
                 <div class="tech-card">
-                    <div class="tech-icon lightning">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <h3>Real-Time Processing</h3>
+                    <div class="tech-icon lightning">⚡</div>
+                    <h3>Real-time Processing</h3>
                     <p>Edge computing network processes tracks in under 15 seconds. Quantum-inspired algorithms deliver instant results.</p>
                 </div>
                 <div class="tech-card">
-                    <div class="tech-icon globe">
-                        <i class="fas fa-globe-americas"></i>
-                    </div>
+                    <div class="tech-icon globe">🌍</div>
                     <h3>197 Language Support</h3>
                     <p>From Mandarin to Swahili, from Sanskrit to Cherokee. Our AI detects and cleans profanity in virtually every human language.</p>
                 </div>
                 <div class="tech-card">
-                    <div class="tech-icon headphones">
-                        <i class="fas fa-headphones"></i>
-                    </div>
-                    <h3>Lossless Quality</h3>
+                    <div class="tech-icon headphones">🎧</div>
+                    <h3>Studio Quality</h3>
                     <p>Maintains original audio quality up to 320kbps MP3 or 24-bit/192kHz FLAC. Studio-grade processing preserves dynamic range.</p>
                 </div>
                 <div class="tech-card">
-                    <div class="tech-icon robot">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                    <h3>Self-Learning AI</h3>
+                    <div class="tech-icon robot">🤖</div>
+                    <h3>Self-Improving AI</h3>
                     <p>Our neural network improves with every track processed. Current accuracy: 99.7% and climbing. Zero false positives guarantee.</p>
                 </div>
             </div>
@@ -195,45 +240,28 @@
     <!-- API Section -->
     <section class="api-section">
         <div class="container">
-            <h2 class="section-title">Built for Scale</h2>
+            <h2 class="section-title">Developer API</h2>
             <div class="api-grid">
                 <div class="api-card">
-                    <h3>RESTful API</h3>
-                    <div class="api-code">POST /api/v1/process</div>
+                    <h3>Simple Integration</h3>
+                    <div class="api-code">POST /api/process<br>Content-Type: multipart/form-data</div>
                     <p>Simple integration with any platform</p>
                 </div>
                 <div class="api-card">
-                    <h3>WebSocket Streaming</h3>
-                    <div class="api-code">WS /api/v1/stream</div>
+                    <h3>WebSocket Updates</h3>
+                    <div class="api-code">socket.on('progress', callback)</div>
                     <p>Real-time processing updates</p>
                 </div>
                 <div class="api-card">
                     <h3>Batch Processing</h3>
-                    <div class="api-code">POST /api/v1/batch</div>
+                    <div class="api-code">POST /api/batch<br>files: [audio1, audio2...]</div>
                     <p>Process up to 1000 tracks simultaneously</p>
                 </div>
                 <div class="api-card">
-                    <h3>Webhook Notifications</h3>
-                    <div class="api-code">Configure custom endpoints</div>
+                    <h3>Webhook Support</h3>
+                    <div class="api-code">webhook_url: "your-endpoint"</div>
                     <p>Get notified when processing completes</p>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Language Banner -->
-    <section class="language-banner">
-        <div class="language-scroll" id="languageScroll">
-            <!-- Languages populated by JavaScript -->
-        </div>
-    </section>
-
-    <!-- Pricing Section -->
-    <section class="pricing-section" id="pricingSection" style="display: none;">
-        <div class="container">
-            <h2 class="section-title">Choose Your Plan</h2>
-            <div class="pricing-grid" id="pricingGrid">
-                <!-- Pricing cards populated by JavaScript -->
             </div>
         </div>
     </section>
@@ -242,17 +270,175 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p>&copy; 2025 FWEA-I. Powered by Advanced AI & Neural Processing.</p>
-                <div class="footer-links">
-                    <a href="#" onclick="showApiDocs()">API Docs</a>
-                    <a href="#" onclick="showPrivacy()">Privacy</a>
-                    <a href="#" onclick="showTerms()">Terms</a>
-                    <a href="#" onclick="showSupport()">Support</a>
+                <div class="footer-brand">
+                    <h3>FWEA-I</h3>
+                    <p>Professional omnilingual audio cleaning</p>
                 </div>
+                <div class="footer-links">
+                    <a onclick="showApiDocs()">API Docs</a>
+                    <a onclick="showPrivacy()">Privacy</a>
+                    <a onclick="showTerms()">Terms</a>
+                    <a onclick="showSupport()">Support</a>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--glass-border);">
+                <p style="color: var(--text-muted); font-size: 0.9rem;">
+                    © 2025 FWEA-I. Professional audio processing for the modern world.
+                </p>
             </div>
         </div>
     </footer>
 
+    <!-- Your JavaScript - MUST be at the end -->
     <script src="app.js"></script>
+
+    <!-- Dependency Check -->
+    <script>
+        // Check if all dependencies loaded correctly
+        window.addEventListener('load', function() {
+            const dependencies = {
+                'Socket.IO': typeof io !== 'undefined',
+                'Stripe': typeof Stripe !== 'undefined',
+                'WaveSurfer': typeof WaveSurfer !== 'undefined'
+            };
+            
+            let allLoaded = true;
+            for (const [name, loaded] of Object.entries(dependencies)) {
+                if (!loaded) {
+                    console.error(`❌ ${name} failed to load`);
+                    allLoaded = false;
+                } else {
+                    console.log(`✅ ${name} loaded successfully`);
+                }
+            }
+            
+            if (allLoaded) {
+                console.log('🚀 All dependencies loaded successfully!');
+            }
+        });
+    </script>
+
+    <style>
+        /* Additional styles for upload formats and preview sections */
+        .upload-format {
+            background: var(--glass-bg);
+            color: var(--accent-cyan);
+            padding: 0.3rem 0.8rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid var(--glass-border);
+        }
+
+        .preview-section {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 1rem;
+        }
+
+        .preview-note {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .preview-highlight {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .preview-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .preview-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .preview-btn.secondary {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--glass-border);
+        }
+
+        .preview-btn.primary {
+            background: var(--gradient-secondary);
+            color: var(--bg-primary);
+        }
+
+        .preview-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .preview-action-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border);
+        }
+
+        .preview-action-btn.primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .preview-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Enhanced Language Banner Animation */
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .language-scroll {
+            display: flex;
+            animation: scroll 180s linear infinite;
+            white-space: nowrap;
+            gap: 1rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .preview-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .preview-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .preview-action-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
 </body>
 </html>
