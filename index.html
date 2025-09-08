@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FWEA-I Omnilingual Clean Version Editor | Professional Audio Cleaning</title>
+    <meta name="description" content="Professional omnilingual audio profanity removal tool for DJs, artists, and content creators.">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1 class="logo-text">FWEA-I</h1>
+                    <span class="logo-subtitle">Omnilingual Clean Editor</span>
+                </div>
+                <nav class="nav">
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#pricing" class="nav-link">Pricing</a>
+                    <a href="https://www.fwea-i.com" target="_blank" class="nav-link">Main Site</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Steps Indicator -->
+    <div class="steps-indicator">
+        <div class="container">
+            <div class="steps-content">
+                <div class="step step--active" data-step="1">
+                    <div class="step-number">1</div>
+                    <span class="step-label">Upload</span>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <span class="step-label">Process</span>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <span class="step-label">Preview</span>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step" data-step="4">
+                    <div class="step-number">4</div>
+                    <span class="step-label">Purchase</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-content">
+                    <h2 class="hero-title">Professional Audio Cleaning</h2>
+                    <p class="hero-subtitle">Remove profanity from any audio track in 80+ languages with AI-powered precision</p>
+                    <div class="hero-features">
+                        <div class="hero-feature">
+                            <span class="hero-feature-icon">🌍</span>
+                            <span>80+ Languages</span>
+                        </div>
+                        <div class="hero-feature">
+                            <span class="hero-feature-icon">⚡</span>
+                            <span>Lightning Fast</span>
+                        </div>
+                        <div class="hero-feature">
+                            <span class="hero-feature-icon">🎵</span>
+                            <span>Studio Quality</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Upload Section -->
+            <section class="upload-section">
+                <div class="upload-card glass-effect" id="uploadZone">
+                    <div class="upload-content">
+                        <div class="upload-icon">
+                            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                        </div>
+                        <h3 class="upload-title">Drop your audio file here</h3>
+                        <p class="upload-subtitle">Drag and drop or click to browse</p>
+                        <div class="upload-formats">
+                            <span class="format-tag">MP3</span>
+                            <span class="format-tag">WAV</span>
+                            <span class="format-tag">FLAC</span>
+                            <span class="format-tag">M4A</span>
+                            <span class="format-tag">AAC</span>
+                        </div>
+                        <button class="btn btn--primary btn--lg upload-btn" id="browseBtn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17,8 12,3 7,8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                            Browse Files
+                        </button>
+                        <p class="upload-limit">Maximum file size: 100MB</p>
+                        <input type="file" id="fileInput" accept=".mp3,.wav,.flac,.m4a,.aac,.ogg" hidden>
+                    </div>
+                </div>
+
+                <!-- File Info Display -->
+                <div class="file-info hidden" id="fileInfo">
+                    <div class="file-details">
+                        <div class="file-icon">🎵</div>
+                        <div class="file-text">
+                            <div class="file-name" id="fileName">filename.mp3</div>
+                            <div class="file-size" id="fileSize">3.2 MB</div>
+                        </div>
+                        <div class="file-status" id="fileStatus">Ready</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Processing Section (Hidden by default) -->
+            <section class="processing-section hidden" id="processingSection">
+                <div class="processing-card glass-effect">
+                    <div class="processing-header">
+                        <h3 class="processing-title">Processing Your Audio</h3>
+                        <div class="processing-status" id="processingStatus">Initializing...</div>
+                        <div class="estimated-time" id="estimatedTime">Estimated time: 2-3 minutes</div>
+                    </div>
+                    
+                    <!-- Enhanced Progress Bar -->
+                    <div class="progress-container">
+                        <div class="progress-stages">
+                            <div class="stage-marker" style="left: 15%">
+                                <div class="stage-dot"></div>
+                                <span class="stage-label">Analyzing</span>
+                            </div>
+                            <div class="stage-marker" style="left: 35%">
+                                <div class="stage-dot"></div>
+                                <span class="stage-label">Language</span>
+                            </div>
+                            <div class="stage-marker" style="left: 55%">
+                                <div class="stage-dot"></div>
+                                <span class="stage-label">Scanning</span>
+                            </div>
+                            <div class="stage-marker" style="left: 75%">
+                                <div class="stage-dot"></div>
+                                <span class="stage-label">Processing</span>
+                            </div>
+                            <div class="stage-marker" style="left: 90%">
+                                <div class="stage-dot"></div>
+                                <span class="stage-label">Enhancing</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span class="progress-text" id="progressText">0%</span>
+                            <span class="time-remaining" id="timeRemaining">~3:00</span>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Waveform Visualization -->
+                    <div class="waveform-container">
+                        <div class="waveform-header">
+                            <span class="waveform-title">Audio Waveform</span>
+                            <div class="waveform-controls">
+                                <button class="waveform-btn" id="zoomOut">−</button>
+                                <button class="waveform-btn" id="zoomIn">+</button>
+                            </div>
+                        </div>
+                        <canvas id="waveformCanvas" class="waveform-canvas"></canvas>
+                        <div class="waveform-legend">
+                            <div class="legend-item">
+                                <div class="legend-color original"></div>
+                                <span>Original</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color processed"></div>
+                                <span>Processed</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Language Detection Display -->
+                    <div class="language-detection">
+                        <span class="language-label">Detected Languages:</span>
+                        <div class="detected-languages" id="detectedLanguages">
+                            <span class="language-tag analyzing">Analyzing...</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Preview Section (Hidden by default) -->
+            <section class="preview-section hidden" id="previewSection">
+                <div class="preview-card glass-effect">
+                    <div class="preview-header">
+                        <h3 class="preview-title">Preview Your Clean Audio</h3>
+                        <div class="preview-info">
+                            <div class="preview-time-limit" id="previewTimeLimit">30-second preview available</div>
+                            <div class="preview-quality">
+                                <span class="quality-indicator"></span>
+                                High Quality Output
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enhanced Audio Player -->
+                    <div class="audio-player">
+                        <button class="play-btn" id="playBtn">
+                            <svg class="play-icon" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                            <svg class="pause-icon hidden" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+                            </svg>
+                        </button>
+                        <div class="audio-progress">
+                            <div class="audio-timeline" id="audioTimeline">
+                                <div class="audio-progress-fill" id="audioProgressFill"></div>
+                                <div class="audio-playhead" id="audioPlayhead"></div>
+                            </div>
+                            <div class="audio-time">
+                                <span id="currentTime">0:00</span>
+                                <span class="time-separator">/</span>
+                                <span id="totalTime">0:30</span>
+                            </div>
+                        </div>
+                        <div class="volume-control">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- A/B Comparison -->
+                    <div class="comparison-controls">
+                        <button class="btn btn--outline comparison-btn active" id="originalBtn">Original</button>
+                        <button class="btn btn--outline comparison-btn" id="cleanedBtn">Cleaned</button>
+                    </div>
+
+                    <!-- Preview Actions -->
+                    <div class="preview-actions">
+                        <button class="btn btn--secondary" id="reprocessBtn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="1 4 1 10 7 10"/>
+                                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                            </svg>
+                            Process Another
+                        </button>
+                        <button class="btn btn--primary btn--lg" id="purchaseBtn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="9" cy="21" r="1"/>
+                                <circle cx="20" cy="21" r="1"/>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                            </svg>
+                            Get Full Clean Audio
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="features-section" id="features">
+                <h2 class="section-title">Why Choose FWEA-I?</h2>
+                <div class="features-grid">
+                    <div class="feature-card glass-effect">
+                        <div class="feature-icon">🌍</div>
+                        <h3 class="feature-title">Omnilingual Support</h3>
+                        <p class="feature-description">Advanced AI detects and processes profanity in 80+ languages and dialects worldwide</p>
+                    </div>
+                    <div class="feature-card glass-effect">
+                        <div class="feature-icon">🎵</div>
+                        <h3 class="feature-title">Studio-Grade Quality</h3>
+                        <p class="feature-description">Professional audio processing maintains original quality while removing unwanted content</p>
+                    </div>
+                    <div class="feature-card glass-effect">
+                        <div class="feature-icon">⚡</div>
+                        <h3 class="feature-title">Lightning Fast Processing</h3>
+                        <p class="feature-description">Advanced AI algorithms deliver clean audio in minutes, not hours</p>
+                    </div>
+                    <div class="feature-card glass-effect">
+                        <div class="feature-icon">🔒</div>
+                        <h3 class="feature-title">Secure & Private</h3>
+                        <p class="feature-description">Enterprise-level security with automatic file deletion after 24 hours</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Language Banner -->
+    <div class="language-banner">
+        <div class="language-scroll" id="languageScroll">
+            <!-- Languages populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Enhanced Pricing Modal -->
+    <div class="modal hidden" id="pricingModal">
+        <div class="modal-backdrop" id="modalBackdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Choose Your Plan</h2>
+                <button class="modal-close" id="modalClose">×</button>
+            </div>
+            
+            <div class="pricing-grid">
+                <!-- Single Track -->
+                <div class="pricing-card">
+                    <div class="pricing-badge">Most Affordable</div>
+                    <div class="pricing-header">
+                        <h3 class="pricing-name">Single Track</h3>
+                        <div class="pricing-price">$4.99</div>
+                        <div class="pricing-type">One-time payment</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Process 1 audio track</li>
+                        <li>30-second preview</li>
+                        <li>All language support</li>
+                        <li>Professional quality</li>
+                        <li>Instant download</li>
+                    </ul>
+                    <button class="btn btn--primary pricing-btn" data-price-id="price_1S4NnmJ2Iq1764pCjA9xMnrn" data-preview-length="30">
+                        Choose Plan
+                    </button>
+                </div>
+                
+                <!-- DJ Pro -->
+                <div class="pricing-card popular">
+                    <div class="pricing-badge popular-badge">Most Popular</div>
+                    <div class="pricing-header">
+                        <h3 class="pricing-name">DJ Pro</h3>
+                        <div class="pricing-price">$29.99<span class="pricing-period">/month</span></div>
+                        <div class="pricing-type">Monthly subscription</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Unlimited track processing</li>
+                        <li>60-second preview</li>
+                        <li>Batch upload (up to 10 files)</li>
+                        <li>Priority processing</li>
+                        <li>Email support</li>
+                        <li>Advanced waveform tools</li>
+                    </ul>
+                    <button class="btn btn--primary pricing-btn" data-price-id="price_1S4NpzJ2Iq1764pCcZISuhug" data-preview-length="60">
+                        Choose Plan
+                    </button>
+                </div>
+                
+                <!-- Studio Elite -->
+                <div class="pricing-card">
+                    <div class="pricing-badge">Professional</div>
+                    <div class="pricing-header">
+                        <h3 class="pricing-name">Studio Elite</h3>
+                        <div class="pricing-price">$99.99<span class="pricing-period">/month</span></div>
+                        <div class="pricing-type">Monthly subscription</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Everything in DJ Pro</li>
+                        <li>60-second preview</li>
+                        <li>API access</li>
+                        <li>Custom filtering options</li>
+                        <li>Bulk processing (50+ files)</li>
+                        <li>Priority support</li>
+                        <li>Advanced analytics</li>
+                        <li>White-label options</li>
+                    </ul>
+                    <button class="btn btn--primary pricing-btn" data-price-id="price_1S4Nr3J2Iq1764pCzHY4zIWr" data-preview-length="60">
+                        Choose Plan
+                    </button>
+                </div>
+                
+                <!-- Studio Day Pass -->
+                <div class="pricing-card">
+                    <div class="pricing-badge">Limited Time</div>
+                    <div class="pricing-header">
+                        <h3 class="pricing-name">Studio Day Pass</h3>
+                        <div class="pricing-price">$9.99</div>
+                        <div class="pricing-type">24-hour access</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>24-hour unlimited access</li>
+                        <li>30-second preview</li>
+                        <li>Process unlimited tracks</li>
+                        <li>Batch processing</li>
+                        <li>Priority queue</li>
+                    </ul>
+                    <button class="btn btn--primary pricing-btn" data-price-id="price_1S4NsTJ2Iq1764pCCbru0Aao" data-preview-length="30">
+                        Choose Plan
+                    </button>
+                </div>
+            </div>
+
+            <div class="pricing-footer">
+                <p class="pricing-guarantee">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="M9 12l2 2 4-4"/>
+                    </svg>
+                    30-day money-back guarantee
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio element for preview -->
+    <audio id="audioElement" preload="none"></audio>
+
+    <script src="app.js"></script>
+</body>
+</html>
