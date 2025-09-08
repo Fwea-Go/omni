@@ -1,0 +1,53 @@
+# Cloudflare Workers configuration for FWEA-I Backend
+name = "fwea-i-backend"
+main = "server.js"
+compatibility_date = "2025-09-08"
+compatibility_flags = ["nodejs_compat"]
+
+
+[env.production]
+name = "fwea-i-production"
+zone_id = "94ad1fffaa41132c2ff517ce46f76692"
+
+[env.staging]
+name = "fwea-i-staging"
+zone_id = "94ad1fffaa41132c2ff517ce46f76692"
+
+# Environment variables (set these via wrangler secret put)
+[vars]
+NODE_ENV = "production"
+BASE_URL = "https://api.fwea-i.com"
+FRONTEND_URL = "https://www.fwea-i.com"
+MAX_FILE_SIZE = "104857600"
+API_RATE_LIMIT = "100"
+
+# KV namespaces for caching
+[[kv_namespaces]]
+binding = "CACHE"
+id = "fwea-i-cache"
+preview_id = "fwea-i-cache-preview"
+
+# R2 bucket for file storage
+[[r2_buckets]]
+binding = "AUDIO_STORAGE"
+bucket_name = "fwea-i-audio-files"
+preview_bucket_name = "fwea-i-audio-files-preview"
+
+# Durable Objects for processing coordination
+[[durable_objects.bindings]]
+name = "PROCESSING_COORDINATOR"
+class_name = "ProcessingCoordinator"
+
+# Custom domains
+[[routes]]
+pattern = "api.fwea-i.com/*"
+zone_id = "94ad1fffaa41132c2ff517ce46f76692"
+
+# Build configuration
+[build]
+command = "npm run build"
+
+# Deployment configuration
+[miniflare]
+kv_persist = true
+r2_persist = true
