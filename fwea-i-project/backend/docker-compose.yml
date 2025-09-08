@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:6.0
+    container_name: fwea-i-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: fwea-i-secure-password
+      MONGO_INITDB_DATABASE: fwea-i
+    volumes:
+      - mongodb_data:/data/db
+      - ./config/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - fwea-i-network
+
+  # Redis for caching and rate limiting
+  redis:
+    image: redis:7-alpine
+    container_name: fwea-i-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass fwea-i-redis-password
+    volumes:
+      - redis_data:/data
+    networks:
+      - fwea-i-network
+
+  # FWEA-I Backend Application
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fwea-i-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - MONGODB_URI=mongodb://admin:fwea-i-secure-password@mongodb:27017/fwea-i?authSource=admin
+      - REDIS_URL=redis://:fwea-i-redis-password@redis:6379
+      - BASE_URL=http://localhost:3000
+      - FRONTEND_URL=http://localhost:8080
+    volumes:
+      - ./backend:/app
+      - ./backend/uploads:/app/uploads
+      - ./backend/logs:/app/logs
+      - /app/node_modules
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - fwea-i-network
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Nginx Reverse Proxy (Production)
+  nginx:
+    image: nginx:alpine
+    container_name: fwea-i-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./config/ssl:/etc/nginx/ssl:ro
+      - ./backend/uploads:/var/www/uploads:ro
+    depends_on:
+      - backend
+    networks:
+      - fwea-i-network
+    profiles:
+      - production
+
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  fwea-i-network:
+    driver: bridge
